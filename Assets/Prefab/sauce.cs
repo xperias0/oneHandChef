@@ -8,22 +8,35 @@ public class sauce : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        system.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        system.Stop();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Mathf.Abs(gameObject.transform.rotation.z) >0.5|| Mathf.Abs(gameObject.transform.rotation.y) < 0.5)
+        float angle = Mathf.Abs(transform.rotation.eulerAngles.z);
+        float anglex = Mathf.Abs(transform.rotation.eulerAngles.x);
+        // Debug.Log(angle);
+        if (angle >= 100.0f && angle <=270.0f || anglex >= 100.0f && anglex <= 250.0f)
         {
-
+            Debug.Log("Drop");
             system.Play(true);
-            Debug.Log(gameObject.transform.rotation.z);
+            
+           // Debug.Log(gameObject.transform.rotation.z);
         }
         else
         {
-            system.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            Debug.Log(gameObject.transform.rotation.z);
+            Debug.Log("stand");
+            system.Stop();
+
+            
+          //  Debug.Log(gameObject.transform.rotation.z);
         }
+    }
+
+
+    public void addSteak() {
+
+        system.collision.AddPlane(GameObject.Find("Beef Steak").transform);
     }
 }
