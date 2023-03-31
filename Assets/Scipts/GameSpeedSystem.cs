@@ -17,7 +17,7 @@ public class GameSpeedSystem : MonoBehaviour
     float colorAlpha = 255f;
 
 
-    public float maxCameraSpeed = 50f;
+    public float maxCameraSpeed = 55f;
     public float maxCharcterSpeed = 15f;
     public float maxHandRotSpeed = 500f;
 
@@ -36,7 +36,6 @@ public class GameSpeedSystem : MonoBehaviour
 
         }
 
-      //  changeColor();
     }
 
     void ChangeMode() {
@@ -47,8 +46,8 @@ public class GameSpeedSystem : MonoBehaviour
             changedColor = false;
             ModeInfor.GetComponent<TextMeshProUGUI>().text = "Slow Mode";
             hand.GetComponent<HandController>().handRotSpeed = 200f;
-            Character.GetComponent<PlayerMovement>().speed = 9f;
-            Camera.GetComponent<LookWithMouse>().ControllerSensitivity = 30f;
+            Character.GetComponent<PlayerMovement>().speed = 7f;
+            Camera.GetComponent<LookWithMouse>().ControllerSensitivity = 27f;
 
 
         }

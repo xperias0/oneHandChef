@@ -9,13 +9,34 @@ public class FruitSliceDetector : MonoBehaviour
     [SerializeField] Vector3 velocity = Vector3.zero;
 
     // Start is called before the first frame update
+
+    bool one = false;
+    bool two = false;
     private void OnTriggerEnter(Collider other)
     {
-        Item  iComp = other.GetComponent<Item>();
-        if (other.gameObject.layer==7&&! iComp.isSliced) {
-            GameObject.Find("Canvas").GetComponent<ScoreManager>().addScore(5);
-            iComp.isSliced = true;
+       
+        if (other.GetComponent<Item>()!=null) {
+            Item iComp = other.GetComponent<Item>();
+            if (!iComp.isSliced) {
+                GameObject.Find("Canvas").GetComponent<ScoreManager>().addScore(5);
+                iComp.isSliced = true;
+                listBoard.Instance.setToggleTrue(6);
+                one = true;
+            }
+            if (iComp.isCooked) {
+                GameObject.Find("Canvas").GetComponent<ScoreManager>().addScore(10);
+                two = true;
+            }
           //  other.transform.parent = transform;
+        }
+
+        if (one && two) {
+            listBoard.Instance.setToggleTrue(7);
+        }
+
+        if (other.tag =="cookable") {
+            Cookable c = other.GetComponent<Cookable>();
+            GameObject.Find("Canvas").GetComponent<ScoreManager>().addScore(c.score);
         }
     }
 

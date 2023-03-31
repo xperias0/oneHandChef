@@ -15,13 +15,18 @@ public class Item : MonoBehaviour
 
     [HideInInspector]
     public bool isSliced = false;
+
+    [HideInInspector]
+    public bool isCooked = false;
     void Update()
     {
         float3 gravity = 10;
 
         // Add gravity
         Velocity += gravity * Time.deltaTime;
-
-
     }
+
+
+
+
 }

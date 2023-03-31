@@ -2,9 +2,9 @@ using com.zibra.liquid.Manipulators;
 using com.zibra.liquid.Solver;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.AnimatedValues;
+
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
+
 
 public class ButtonEnableParticle : MonoBehaviour
 {
@@ -27,29 +27,25 @@ public class ButtonEnableParticle : MonoBehaviour
     }
     private void Update()
     {
-        if (!isTri && Vector3.Distance(hand.transform.position, transform.position) < 1f && hand.GetComponent<HandController>().isLeftGrab )
+        
+        if (isTri)
         {
-            ButtonSwitch();
-
-            isTri = true;
-        }
-        if (isTri) {
             timer += Time.deltaTime;
-           
-            if (timer>2f) {
+
+            if (timer > 2f)
+            {
                 timer = 0;
                 isTri = false;
             }
         }
-       // Debug.Log("TImer  " + timer);
     }
 
     void ButtonSwitch() {
-        if (!isOpen)
+        if (!isOpen )
         {
             particle.GetComponent<ParticleSystem>().Play();
             particle.GetComponent<AudioSource>().Play();
-            Debug.Log("yes");
+           // Debug.Log("yes");
             if (water) {
                 waterOpen.GetComponent<ZibraLiquidEmitter>().enabled = true;
             }
@@ -58,7 +54,7 @@ public class ButtonEnableParticle : MonoBehaviour
         else {
             particle.GetComponent<ParticleSystem>().Stop();
             particle.GetComponent<AudioSource>().Pause();
-            Debug.Log("yes:no");
+           // Debug.Log("yes:no");
             if (water)
             {
                 waterOpen.GetComponent<ZibraLiquidEmitter>().enabled = false;
@@ -67,10 +63,21 @@ public class ButtonEnableParticle : MonoBehaviour
         }
     
     }
-   
 
 
+    private void OnTriggerStay(Collider other)
+    {
+       
 
+        if (!isTri && other.tag == "Player" && HandController.Instance.isLeftGrab && Grab.Instance.isGrabT == false) {
+           
+            ButtonSwitch();
+            isTri = true;
+        }
+    }
+
+
+    
 
 
 }

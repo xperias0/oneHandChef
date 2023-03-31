@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class HandController : MonoBehaviour
@@ -29,10 +30,10 @@ public class HandController : MonoBehaviour
 
     public float angle = 280f;
 
-    [HideInInspector]
+  
     public bool isLeftGrab = false;
 
-    [HideInInspector]
+    //[HideInInspector]
     public bool isGrab = false;
 
     float totalLeftAngle = 0;
@@ -49,7 +50,7 @@ public class HandController : MonoBehaviour
 
     Vector3 handMoveTargetPos;
 
-    float moveValue = 0;
+    public float moveValue = 0.4f;
 
 
     float minRotSpeed =80f;
@@ -59,60 +60,79 @@ public class HandController : MonoBehaviour
 
     float curRotSpeed = 80f;
 
-  
+
 
     [HideInInspector]
+
+
+    private static HandController m_instance = null;
+
+
+    private void Awake()
+    {
+        m_instance = this;
+    }
 
     private void Start()
     {
         handRotSpeed = GameObject.Find("Canvas").GetComponent<GameSpeedSystem>().maxHandRotSpeed;
-       
+
+
     }
 
-    //void FixedUpdate()
-    //{
-    //    handController();
+   
+    public static HandController Instance{
 
-    //    handRot();
+        get{
+            return m_instance;
+        }
 
-    //    handMove();
-
-    //}
-
+    }
     private void Update()
     {
+
+      
+
         handController();
 
         handRot();
 
-        handMove();
+
+        float UpandDownAxis = Input.GetAxis("UpDownAxis");
+
+        if (UpandDownAxis == 0.1f)
+        {
+            moveValue += Time.deltaTime * handMovespeed;
+
+        }
+        if (UpandDownAxis == -0.1f)
+        {
+            moveValue -= Time.deltaTime * handMovespeed;
+
+        }
+
+        handMove(moveValue);
     }
 
 
 
-    void handMove() {
-        float UpandDownAxis = Input.GetAxis("UpDownAxis");
+    public void handMove(float value) {
+
+        value = Mathf.Clamp(value, 0, 1f);
+
+       // Debug.Log("value: "+value);
 
         handDefaultPos = GameObject.Find("h").transform.position;
-       
 
-        handMoveTargetPos= handDefaultPos + transform.forward* -2.5f;
 
-        moveValue = Mathf.Clamp(moveValue,0,1f);
-       // Debug.Log("HandmoveValue: "+moveValue);
+        handMoveTargetPos = handDefaultPos + transform.forward * -4f;
 
-        if (UpandDownAxis == 0.1f) {
-            moveValue += Time.deltaTime * handMovespeed;
 
-            transform.position = Vector3.Lerp(handDefaultPos,handMoveTargetPos, moveValue);
+       transform.position = Vector3.Lerp(handDefaultPos,handMoveTargetPos, value);
      
-        }
-        if (UpandDownAxis == -0.1f) {
-            moveValue -= Time.deltaTime * handMovespeed;
+      
  
-            transform.position = Vector3.Lerp(handDefaultPos, handMoveTargetPos, moveValue);
-        
-        }
+         
         
     }
     void handController() {
@@ -189,17 +209,17 @@ public class HandController : MonoBehaviour
             }
         }
 
-        if (leftJoy == 1 && rightjoy == 1 && totalLeftAngle == angle && totalRightAngle == angle)
+        if (leftJoy >0 && rightjoy >0 && totalLeftAngle == angle && totalRightAngle == angle)
         {
             isGrab = true;
-            isLeftGrab = false;
+          //  isLeftGrab = false;
         }
         else
         {
             isGrab = false;
         }
 
-        if (leftJoy == 1 && totalLeftAngle == angle)
+        if (leftJoy > 0 && !isGrab)
         {
             isLeftGrab = true;
         }

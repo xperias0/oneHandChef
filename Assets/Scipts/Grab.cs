@@ -1,4 +1,6 @@
 
+using Newtonsoft.Json.Bson;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -41,9 +43,9 @@ public class Grab : MonoBehaviour
 
     HandController hc;
 
-    bool leftGrabed = false;
+
     [HideInInspector]
-    public GameObject grabObject = null;
+    public bool isGrabT = false;
 
     Material mat;
 
@@ -56,6 +58,11 @@ public class Grab : MonoBehaviour
     float throwTime = 0;
 
     public float throwSpeed;
+
+    float minDis = 0.2f;
+
+
+
     public static Grab Instance
     {
         get
@@ -63,6 +70,11 @@ public class Grab : MonoBehaviour
             return m_instance;
         }
     }
+    private void Awake()
+    {
+        m_instance = this;
+    }
+
     void Start()
     {
         hand = GameObject.Find("WhiteHand");
@@ -73,7 +85,7 @@ public class Grab : MonoBehaviour
 
         target = max;
 
-        lastHandPos = hand.transform.position;
+        lastHandPos = transform.position;
 
         objAndMats = new Dictionary<GameObject, List<Material>>();
 
@@ -83,295 +95,160 @@ public class Grab : MonoBehaviour
     }
     private void Update()
     {
-        sphereColPos = GameObject.Find("OverlapSphere").transform.position;
+        sphereColPos = transform.position;
 
 
         colliders = Physics.OverlapSphere(sphereColPos, sphereRadius, 1 << 7);
 
+        //  overlapDetector();
 
+        grabDetected();
 
-
-        //   Debug.Log("Collider: "+colliders.Length);
-        overlapDetector();
+        distanceDetector();
     }
     // Update is called once per frame
 
-    void overlapDetector()
-    {
-        // Debug.Log("dic: " + objAndMats.Count);
-        //   Debug.Log("touchedSphereObjs: "+ touchedSphereObjs.Count);
+    void distanceDetector() {
+        Vector3 direction = ( transform.position - lastHandPos).normalized;
+
+        lastHandPos = transform.position;
+
+        Ray ray = new Ray(transform.position,direction);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 0.6f,1<<0)) {
+
+            float dis = Vector3.Distance(hit.point , transform.position);
+
+            float num = (0.4f / dis) * Time.deltaTime * 0.7f;
+            HandController.Instance.moveValue -= num;
+
+      
+
+          //  Debug.DrawLine(transform.position,hit.point,Color.blue);
+        }
+        Debug.DrawRay(transform.position,direction*2f,Color.red);
+    }
+
+
+    void grabDetected() {
+
+        bool isLeft = HandController.Instance.isLeftGrab;
+        bool isBoth = HandController.Instance.isGrab;
+
         if (colliders.Length != 0)
         {
-            firstObj = colliders[0].gameObject;
-
-
-          
-
 
             foreach (Collider c in colliders)
             {
                 addMaterials(c.gameObject);
-                if (!touchedSphereObjs.Contains(c.gameObject))
-                {
+
+                if (!touchedSphereObjs.Contains(c.gameObject)) {
                     touchedSphereObjs.Add(c.gameObject);
                 }
-
-                if (Input.GetButton("ControllerA"))
-                {
-                    throwTime += Time.deltaTime * throwSpeed;
-                    Vector3 throwDirection = Camera.main.transform.forward * throwTime;
-                    throwLine(firstObj, throwDirection);
-
-                }
-                bool isThrow = false;
-                if (Input.GetButtonUp("ControllerA"))
-                {
-                    Vector3 throwDirection = Camera.main.transform.forward * throwTime;
-                    GetComponent<LineRenderer>().enabled = false;
-                    c.GetComponent<Rigidbody>().AddForce(throwDirection, ForceMode.Impulse);
-                    throwTime = 0;
-                    isThrow= true;
-                }
-
-                if (isThrow) {
-                    // c.transform.rotation *= Quaternion.AngleAxis(50 * Time.deltaTime, c.transform.forward);
-                    c.transform.Rotate(c.transform.forward,130f);
-                }
-
             }
-
-
-            // Debug.Log(firstObj.name.Substring(0, 6));
             matGlow();
-            if (hc.isLeftGrab)
+
+            if (isLeft)
             {
 
-                if (firstObj && firstObj.tag != "RotObj")
-                {
-                    firstObj.transform.parent = transform;
-                    if (firstObj.gameObject.GetComponent<Rigidbody>())
-                    {
-                        firstObj.gameObject.GetComponent<Rigidbody>().useGravity = false;
-                        firstObj.GetComponent<Rigidbody>().freezeRotation = true;
-
-                        if (firstObj.tag == "kinematic")
-                        {
-                            //   firstObj.gameObject.GetComponent<Rigidbody>().isKinematic= true;
-                        }
-                        resetMats();
-                    }
-
-                }
-                else
-                {
-                    // Debug.Log("RotGrab: "+firstObj.name);
-
-                    if (!isGrabRot)
-                    {
-                        RotPos = transform.position;
-                        isGrabRot = true;
-                    }
-
-                    Vector3 direction = (transform.position - RotPos).normalized;
-                    float angleOfrot = direction.z + direction.x;
-
-                    Debug.Log("Angle: " + angleOfrot);
-                    angleOfrot = Mathf.Clamp(angleOfrot, -20f, 180f);
-
-                    firstObj.transform.RotateAround(firstObj.transform.position, firstObj.transform.up, angleOfrot);
-                    resetMats();
-                }
+                GameObject obj = touchedSphereObjs[0];
+                isGrabT = true;
+                setObject(obj);
+                resetMats();
 
             }
-
-
-            if (hc.isGrab)
+            else if (isBoth)
             {
-                foreach (Collider c in colliders)
+
+                foreach (GameObject obj in touchedSphereObjs)
                 {
-
-
-                    GameObject cur = c.gameObject;
-                    if (cur.tag == "RotObj")
-                    {
-
-                        if (!isGrabRot)
-                        {
-                            RotPos = transform.position;
-                            isGrabRot = true;
-                        }
-
-
-                        Vector3 direction = (transform.position - RotPos).normalized;
-                        float angleOfrot =direction.z+direction.x;
-
-                        Debug.Log("Angle: " + angleOfrot);
-                        angleOfrot = Mathf.Clamp(angleOfrot, -20f, 180f);
-
-                        cur.transform.RotateAround(cur.transform.position, cur.transform.up, angleOfrot);
-                        resetMats();
-                    }
-                    else {
-                        cur.gameObject.transform.parent = transform;
-                        cur.gameObject.GetComponent<Rigidbody>().useGravity = false;
-                        cur.gameObject.GetComponent<Rigidbody>().freezeRotation = true;
-                    }
-                  
-
+                    setObject(obj);
                 }
+                Debug.Log("BOTH");
+                isGrabT = true;
                 resetMats();
             }
+            else {
 
-            if (!hc.isGrab && !hc.isLeftGrab)
-            {
-                foreach (GameObject cur in touchedSphereObjs)
-                {
-
-                    if (cur.GetComponent<Rigidbody>() && cur.tag != "RotObj")
-                    {
-                        cur.gameObject.transform.parent = null;
-                        cur.gameObject.GetComponent<Rigidbody>().useGravity = true;
-                        cur.gameObject.GetComponent<Rigidbody>().freezeRotation = false;
-                        if (cur.tag == "kinematic")
-                        {
-                            cur.gameObject.GetComponent<Rigidbody>().isKinematic = false;
-                        }
-                    }
-
-                }
-                // resetMats();
                 isGrabRot = false;
+                foreach (GameObject obj in touchedSphereObjs)
+                {
+                    resetObject(obj);
+                }
+                isGrabT = false;
+               // resetMats();
+               
+
+             
+                touchedSphereObjs.Clear();
             }
 
 
+            
 
         }
-
-        if (colliders.Length == 0 && objAndMats.Count != 0)
+        else
         {
             resetMats();
-            //if (touchedSphereObjs.Count!=0) {
-            //    foreach (GameObject cur in touchedSphereObjs)
-            //    {
-            //        if (cur.tag!="RotObj") {
-            //            cur.gameObject.transform.parent = null;
-            //            cur.gameObject.GetComponent<Rigidbody>().useGravity = true;
-            //            cur.gameObject.GetComponent<Rigidbody>().freezeRotation = false;
-            //        }
 
-
-            //    }
-            //}
+           
 
             touchedSphereObjs.Clear();
-
-            //Debug.Log("Leave");
         }
 
-
-        if (colliders.Length == 0 && touchedSphereObjs.Count != 0)
-        {
-            foreach (GameObject cur in touchedSphereObjs)
-            {
-                cur.gameObject.transform.parent = null;
-                cur.gameObject.GetComponent<Rigidbody>().useGravity = true;
-                cur.gameObject.GetComponent<Rigidbody>().freezeRotation = false;
-
-            }
-            Debug.Log("ObjLeaves");
-            touchedSphereObjs.Clear();
-        }
 
     }
 
 
-    void addMat(GameObject obj)
-    {
+    void setObject(GameObject obj) {
+        string tag = obj.tag;
+
+            switch (tag) {
+            case "RotObj":
+                if (!isGrabRot)
+                {
+                    RotPos = transform.position;
+                    isGrabRot = true;
+                }
+
+                Vector3 direction = (transform.position - RotPos).normalized;
+                float angleOfrot = direction.z + direction.x;
+                angleOfrot = Mathf.Clamp(angleOfrot, -20f, 180f);
+                obj.transform.RotateAround(obj.transform.position, obj.transform.up, angleOfrot);
+                break;
+
+            default:
+                if (obj.TryGetComponent<Rigidbody>(out Rigidbody rb))
+                {
+
+                    rb.isKinematic = true;
+                    rb.freezeRotation = true;
+                    rb.useGravity = false;
+                    obj.transform.parent = transform;
+                }
+                   break;
+
+               
+
+            }
+
+        
+    
+    }
 
 
-
-        if (obj.transform.childCount == 0 && !objAndMats.ContainsKey(obj))
+    void resetObject(GameObject obj) {
+        if (obj.TryGetComponent<Rigidbody>(out Rigidbody rb))
         {
-
-            List<Material> list = new List<Material>();
-
-            if (!list.Contains(mat))
-            {
-                list.Add(mat);
-            }
-            Material[] mats = obj.GetComponent<Renderer>().materials;
-
-            foreach (Material m in mats)
-            {
-                string s = m.name.Substring(0, 4);
-                if (!s.Equals("glow"))
-                {
-                    list.Add(m);
-                }
-
-            }
-            objAndMats.Add(obj, list);
-
-            obj.GetComponent<Renderer>().materials = objAndMats[obj].ToArray();
+            rb.isKinematic = false;
+            rb.freezeRotation = false;
+            rb.useGravity = true;
+            obj.transform.parent = null; 
         }
-
-        if (obj.transform.childCount > 0)
-        {
-            if (obj.GetComponent<Renderer>())
-            {
-                List<Material> list = new List<Material>();
-                list.Add(mat);
-                foreach (Material m in obj.GetComponent<Renderer>().materials)
-                {
-                    string s = m.name.Substring(0, 4);
-                    if (!s.Equals("glow"))
-                    {
-                        list.Add(m);
-                    }
-                    obj.GetComponent<Renderer>().materials = list.ToArray();
-                }
-            }
-            else
-            {
-                for (int i = 0; i < obj.transform.childCount; i++)
-                {
-                    GameObject t = obj.transform.GetChild(i).gameObject;
-                    List<Material> list = new List<Material>();
-                    if (t.tag == "childPart" && !objAndMats.ContainsKey(t))
-                    {
-                        if (!list.Contains(mat))
-                        {
-                            list.Add(mat);
-                        }
-                        foreach (Material m in t.GetComponent<Renderer>().materials)
-                        {
-                            string s = m.name.Substring(0, 4);
-                            if (!s.Equals("glow"))
-                            {
-                                list.Add(m);
-                            }
-                        }
-
-                        objAndMats.Add(t, list);
-                        t.GetComponent<Renderer>().materials = list.ToArray();
-                    }
-                }
-            }
-
-
-
-
-        }
-
-
-        isMatAdded = true;
-
-        Debug.Log("Added: " + obj.name);
-
-
-
 
     }
+
+   
 
 
     void addMaterials(GameObject obj) {
@@ -379,12 +256,18 @@ public class Grab : MonoBehaviour
         rebuildMaterialsArray(obj);
         for (int i=0;i<obj.transform.childCount;i++) {
             GameObject cur = obj.transform.GetChild(i).gameObject;
-            rebuildMaterialsArray(cur);
+            string tag = obj.tag;
+
+            if (!tag.Equals("particle")) {
+                rebuildMaterialsArray(cur);
+            }
+           
         }
         isMatAdded = true;
     }
 
     void rebuildMaterialsArray(GameObject obj) {
+        
         if (obj.GetComponent<Renderer>() && !objAndMats.ContainsKey(obj)) {
             List<Material> list = new List<Material>();
             list.Add(mat);

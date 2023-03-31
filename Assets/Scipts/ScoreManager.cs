@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEditor.SceneManagement;
-using UnityEditor.SearchService;
 using UnityEngine.SceneManagement;
 
 public class ScoreManager : MonoBehaviour
@@ -17,17 +15,20 @@ public class ScoreManager : MonoBehaviour
 
     public int saltScore = 0;
 
-    int maxFinalScore = 100;
+    int maxFinalScore = 300;
 
     float finishedTime;
+
+
+    public GameObject FinalPanel;
     // Update is called once per frame
 
     private void Update()
     {
-        if (Input.GetButtonDown("Finish")) {
-            Debug.Log("Done! ");
-            FInalCodition();
-        }
+        //if (Input.GetButtonDown("Finish")) {
+        //    Debug.Log("Done! ");
+        //    FInalCodition();
+        //}
 
         if (Input.GetKeyDown(KeyCode.R)) {
             SceneManager.LoadScene(1);
@@ -53,22 +54,26 @@ public class ScoreManager : MonoBehaviour
     }
 
     public void FInalCodition() {
-        finalTime();
-        if (FinalScore >= 50)
+       
+        FinalPanel.SetActive(true);
+
+       // finalTime();
+        if (FinalScore >= 180)
         {
-            GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "Nice Job!";
+            GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "Excellent Chef!";
         }
         else {
 
-            GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "You made a bad dish :(";
+            GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "Try next time :(";
 
         }
+      //  UnityEditor.EditorApplication.isPaused = true;
     }
 
 
 
     public void finalTime() {
-        finishedTime= Time.time;
+        finishedTime = Time.time;
         GameObject.Find("FinishedTime").GetComponent<TextMeshProUGUI>().text ="Finished time: "+ finishedTime.ToString("f2")+" s";
     
     }

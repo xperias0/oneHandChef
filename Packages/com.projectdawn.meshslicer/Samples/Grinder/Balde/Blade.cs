@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEditor;
+
 using Plane = ProjectDawn.Geometry3D.Plane;
+using UnityEngine.UI;
 
 public class Blade : MonoBehaviour
 {
@@ -17,6 +20,9 @@ public class Blade : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+
+        
+
         if (other.TryGetComponent(out MeshSlicer slicer) && !m_Sliced.Contains(slicer))
         {
             var position = transform.position;
@@ -27,7 +33,18 @@ public class Blade : MonoBehaviour
             {
                 m_Sliced.Add(result.Slicer);
             });
+
+
+            if (other.name.Length >= 6 && other.name.Substring(0,6).Equals("Potato")) {
+                GameObject.Find("third").transform.GetChild(0).GetComponent<Toggle>().isOn = true;
+
+            }
+
         }
+        
+    
+
+
     }
 
     void OnTriggerExit(Collider other)
