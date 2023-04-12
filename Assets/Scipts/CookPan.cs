@@ -11,7 +11,7 @@ public class CookPan : MonoBehaviour
     bool isOpened = false;
     Vector3 lastPos;
     float time = 0;
-
+    public bool Onfire = false;
 
     private void Start()
     {
@@ -34,31 +34,38 @@ public class CookPan : MonoBehaviour
         lastPos = transform.position;
 
         isOpened = GameObject.Find("fireButton").GetComponent<ButtonEnableParticle>().isOpen;
-        if (other.gameObject.tag == "cookable" && isOpened)
-        {
-            Cookable b = other.gameObject.GetComponent<Cookable>();
-            b.cookTime += Time.fixedDeltaTime;
-           // Debug.Log(other.gameObject.name + " on Pan: ");
-        }
-
-        if (isOpened &&other.tag=="Grable" ) {
-
-            time += Time.deltaTime;
-
-            if (time>3f) {
-
-                // other.GetComponent<MeshRenderer>().material = GameObject.Find("ckmat").GetComponent<Renderer>().material;
-                other.GetComponent<MeshRenderer>().material.color = new Color(255,211,0,20);
-                other.GetComponent<Item>().isCooked = true;
-                time = 0;
+        if (Onfire && isOpened) {
+            if (other.gameObject.tag == "cookable" )
+            {
+                Cookable b = other.gameObject.GetComponent<Cookable>();
+                b.cookTime += Time.fixedDeltaTime;
+                // Debug.Log(other.gameObject.name + " on Pan: ");
             }
-        
-            
+
+            if (other.tag == "Grable")
+            {
+
+                time += Time.deltaTime;
+
+                if (time > 3f)
+                {
+
+                    // other.GetComponent<MeshRenderer>().material = GameObject.Find("ckmat").GetComponent<Renderer>().material;
+                    other.GetComponent<MeshRenderer>().material.color = new Color(255, 211, 0, 20);
+                    other.GetComponent<Item>().isCooked = true;
+                    time = 0;
+                }
+
+
+            }
+
         }
+
+       
 
 
         if (other.TryGetComponent<Rigidbody>(out Rigidbody rb)) {
-            Debug.Log("vel: "+ vel);
+        //    Debug.Log("vel: "+ vel);
             float x = transform.position.x;
             float y = transform.position.y;
             float z = transform.position.z;

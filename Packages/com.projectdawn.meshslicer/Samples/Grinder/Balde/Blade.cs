@@ -12,12 +12,26 @@ public class Blade : MonoBehaviour
 {
     HashSet<MeshSlicer> m_Sliced = new HashSet<MeshSlicer>();
     MeshSlicerManager m_Manager;
-
+    float timer;
+    bool isSliced = false;
     void Start()
     {
         m_Manager = MeshSlicerManager.GetOrCreateManager();
     }
 
+
+    private void Update()
+    {
+        timer -= Time.deltaTime;
+        if (timer > 0.2f)
+        {
+            isSliced = false;
+        }
+        else {
+            isSliced = true;
+        }
+     
+    }
     void OnTriggerEnter(Collider other)
     {
 
@@ -39,7 +53,14 @@ public class Blade : MonoBehaviour
                 GameObject.Find("third").transform.GetChild(0).GetComponent<Toggle>().isOn = true;
 
             }
+           
 
+            if (isSliced) {
+                GetComponent<AudioSource>().Play();
+                isSliced = true;
+                timer = 0.5f;
+            }
+            
         }
         
     

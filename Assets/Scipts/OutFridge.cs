@@ -11,11 +11,11 @@ public class OutFridge : MonoBehaviour
     {
         
 
-        if (!isSteakOut && other.tag == "cookable") {
+        if (other.tag == "cookable") {
             isSteakOut = true;
         }
 
-        if (!isfruitOut && other.tag == "Grable") {
+        if (other.tag == "Grable") {
             isfruitOut = true;
         }
 

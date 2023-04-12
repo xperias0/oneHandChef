@@ -100,12 +100,12 @@ public class HandController : MonoBehaviour
 
         float UpandDownAxis = Input.GetAxis("UpDownAxis");
 
-        if (UpandDownAxis == 0.1f)
+        if (UpandDownAxis > 0f)
         {
             moveValue += Time.deltaTime * handMovespeed;
 
         }
-        if (UpandDownAxis == -0.1f)
+        if (UpandDownAxis < 0)
         {
             moveValue -= Time.deltaTime * handMovespeed;
 

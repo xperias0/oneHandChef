@@ -56,10 +56,10 @@ public class text : MonoBehaviour
             if (mins == 0 && seconds <= 30.0f)
             {
                 GetComponent<TextMeshProUGUI>().color = Color.red;
-                GetComponent<TextMeshProUGUI>().fontSize = 50f;
+                GetComponent<TextMeshProUGUI>().fontSize = 30f;
             }
 
-            GetComponent<TextMeshProUGUI>().text = "Time: " + mins + "." + seconds.ToString("f2");
+            GetComponent<TextMeshProUGUI>().text = + mins + "." + seconds.ToString("f2");
         }
         else {
           //  Debug.Log("0000");

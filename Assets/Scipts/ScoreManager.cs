@@ -23,16 +23,23 @@ public class ScoreManager : MonoBehaviour
     public GameObject FinalPanel;
     // Update is called once per frame
 
+
+    private void Start()
+    {
+       
+    }
     private void Update()
     {
-        //if (Input.GetButtonDown("Finish")) {
-        //    Debug.Log("Done! ");
-        //    FInalCodition();
-        //}
 
         if (Input.GetKeyDown(KeyCode.R)) {
             SceneManager.LoadScene(1);
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.Quit();
+        
+        }
+
     }
     public void addScore(int addNum ) {
        
@@ -57,16 +64,18 @@ public class ScoreManager : MonoBehaviour
        
         FinalPanel.SetActive(true);
 
-       // finalTime();
-        if (FinalScore >= 180)
-        {
-            GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "Excellent Chef!";
-        }
-        else {
+        // finalTime();
+        //if (FinalScore >= 180)
+        //{
+        //    GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "Excellent Chef!";
+        //}
+        //else {
 
-            GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "Try next time :(";
+        //    GameObject.Find("Condition").GetComponent<TextMeshProUGUI>().text = "Try next time :(";
 
-        }
+        //}
+        GameObject.Find("PassScore").GetComponent<ScorePasser>().score = FinalScore;
+        SceneManager.LoadScene(2);
       //  UnityEditor.EditorApplication.isPaused = true;
     }
 

@@ -84,7 +84,7 @@ public class SaltBottleScript : MonoBehaviour
 
             yield return new WaitForSeconds(0.1f);
         }
-
+        GetComponent<AudioSource>().Play();
         isStarted = false;
     }
 }

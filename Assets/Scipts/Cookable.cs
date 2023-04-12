@@ -22,7 +22,7 @@ public class Cookable : MonoBehaviour
 
 
     float cookedTime = 8f;
-    float overCookedTime = 15f;
+    float overCookedTime = 18f;
     void Start()
     {
         afterCooked  = transform.GetChild(0).gameObject;
@@ -36,6 +36,8 @@ public class Cookable : MonoBehaviour
     private void Update()
     {
         if (cookTime> cookedTime && cookTime<=overCookedTime) {
+            GameObject.Find("FirePlace").GetComponent<AudioSource>().Play() ;
+
             transform.GetComponent<MeshRenderer>().enabled = false;
 
             afterCooked.SetActive(true);
@@ -58,9 +60,18 @@ public class Cookable : MonoBehaviour
             listBoard.Instance.setToggleTrue(5);
         }
 
-        if (cookTime > overCookedTime + 4f) {
+        if (cookTime > overCookedTime + 4f)
+        {
             overSmoke.SetActive(false);
-           
+
+        }
+        else {
+            GameObject.Find("FirePlace").GetComponent<AudioSource>().Pause();
+
+
         }
     }
+
+
+
 }

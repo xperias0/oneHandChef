@@ -115,7 +115,7 @@ public class Grab : MonoBehaviour
 
         Ray ray = new Ray(transform.position,direction);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 0.6f,1<<0)) {
+        if (Physics.Raycast(ray, out hit, 0.6f, 1 << 0)) {
 
             float dis = Vector3.Distance(hit.point , transform.position);
 
@@ -153,6 +153,17 @@ public class Grab : MonoBehaviour
 
                 GameObject obj = touchedSphereObjs[0];
                 isGrabT = true;
+
+                Vector3 dir = Camera.main.transform.forward;
+
+                if (Input.GetButtonDown("ControllerA")) {
+                
+                
+                }
+
+
+            //    throwLine(obj,dir);
+
                 setObject(obj);
                 resetMats();
 
@@ -164,7 +175,30 @@ public class Grab : MonoBehaviour
                 {
                     setObject(obj);
                 }
-                Debug.Log("BOTH");
+
+                for (int i=0;i< touchedSphereObjs.Count;i++)
+                {
+                    GameObject b = touchedSphereObjs[i];
+                    bool isIn = false;
+                    for (int j = 0; j < colliders.Length; j++)
+                    {
+                        GameObject cur = colliders[j].gameObject;
+                        if (b == cur)
+                        {
+                            isIn = true;
+                        }
+
+                    }
+
+                    if (!isIn)
+                    {
+                        resetObject(b);
+                        touchedSphereObjs.Remove(b);
+                        isIn = false;
+                    }
+                }
+
+
                 isGrabT = true;
                 resetMats();
             }
@@ -176,23 +210,15 @@ public class Grab : MonoBehaviour
                     resetObject(obj);
                 }
                 isGrabT = false;
-               // resetMats();
-               
-
-             
+            
                 touchedSphereObjs.Clear();
             }
-
-
-            
+          
 
         }
         else
         {
             resetMats();
-
-           
-
             touchedSphereObjs.Clear();
         }
 

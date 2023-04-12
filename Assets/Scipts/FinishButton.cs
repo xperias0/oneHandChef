@@ -8,9 +8,14 @@ public class FinishButton : MonoBehaviour
     // Start is called before the first frame update
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Player" && GameObject.Find("WhiteHand").GetComponent<HandController>().isLeftGrab) {
-            GameObject.Find("Time").GetComponent<text>().cd = true ;
-                
+        if (!Grab.Instance.isGrabT) {
+            if (other.tag == "Player" && GameObject.Find("WhiteHand").GetComponent<HandController>().isLeftGrab)
+            {
+                GameObject.Find("Time").GetComponent<text>().cd = true;
+
+            }
         }
+        
+       
     }
 }
