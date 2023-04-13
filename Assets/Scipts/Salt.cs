@@ -33,6 +33,7 @@ public class Salt : MonoBehaviour
         if (!isAdded&&other.gameObject.layer==7) {
             GameObject.Find("Canvas").GetComponent<ScoreManager>().addSalt();
             isAdded = true;
+            listBoard.Instance.setToggleTrue(4);
         }      
       
     }

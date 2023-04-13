@@ -80,6 +80,8 @@ namespace ProjectDawn.MeshSlicer
                 var gameObject = new GameObject("MeshSlicerManager");
                 manager = gameObject.AddComponent<MeshSlicerManager>();
             }
+
+          
             return manager;
         }
 

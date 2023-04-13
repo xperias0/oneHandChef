@@ -10,6 +10,8 @@ TagManager:
   - RotObj
   - kinematic
   - cookable
+  - potato
+  - particle
   layers:
   - Default
   - TransparentFX

@@ -26,25 +26,25 @@ public class PlayerMovement : MonoBehaviour
     InputAction movement;
     InputAction jump;
 
-    void Start()
-    {
-        movement = new InputAction("PlayerMovement", binding: "<Gamepad>/leftStick");
-        movement.AddCompositeBinding("Dpad")
-            .With("Up", "<Keyboard>/w")
-            .With("Up", "<Keyboard>/upArrow")
-            .With("Down", "<Keyboard>/s")
-            .With("Down", "<Keyboard>/downArrow")
-            .With("Left", "<Keyboard>/a")
-            .With("Left", "<Keyboard>/leftArrow")
-            .With("Right", "<Keyboard>/d")
-            .With("Right", "<Keyboard>/rightArrow");
+    //void Start()
+    //{
+    //    movement = new InputAction("PlayerMovement", binding: "<Gamepad>/leftStick");
+    //    movement.AddCompositeBinding("Dpad")
+    //        .With("Up", "<Keyboard>/w")
+    //        .With("Up", "<Keyboard>/upArrow")
+    //        .With("Down", "<Keyboard>/s")
+    //        .With("Down", "<Keyboard>/downArrow")
+    //        .With("Left", "<Keyboard>/a")
+    //        .With("Left", "<Keyboard>/leftArrow")
+    //        .With("Right", "<Keyboard>/d")
+    //        .With("Right", "<Keyboard>/rightArrow");
 
-        jump = new InputAction("PlayerJump", binding: "<Gamepad>/a");
-        jump.AddBinding("<Keyboard>/space");
+    //    jump = new InputAction("PlayerJump", binding: "<Gamepad>/a");
+    //    jump.AddBinding("<Keyboard>/space");
 
-        movement.Enable();
-        jump.Enable();
-    }
+    //    movement.Enable();
+    //    jump.Enable();
+    //}
 
 #endif
 
@@ -62,11 +62,11 @@ public class PlayerMovement : MonoBehaviour
         bool jumpPressed = false;
 
 #if ENABLE_INPUT_SYSTEM
-        var delta = movement.ReadValue<Vector2>();
-        x = delta.x;
-        z = delta.y;
-        jumpPressed = Mathf.Approximately(jump.ReadValue<float>(), 1);
-#else
+        //var delta = movement.ReadValue<Vector2>();
+        //x = delta.x;
+        //z = delta.y;
+        //jumpPressed = Mathf.Approximately(jump.ReadValue<float>(), 1);
+
         x = Input.GetAxis("Horizontal");
         z = Input.GetAxis("Vertical");
         jumpPressed = Input.GetButtonDown("Jump");

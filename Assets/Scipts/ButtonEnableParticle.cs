@@ -1,7 +1,10 @@
-    using System.Collections;
+using com.zibra.liquid.Manipulators;
+using com.zibra.liquid.Solver;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.AnimatedValues;
+
 using UnityEngine;
+
 
 public class ButtonEnableParticle : MonoBehaviour
 {
@@ -9,85 +12,72 @@ public class ButtonEnableParticle : MonoBehaviour
     [HideInInspector]
     public bool isOpen = false;
     public GameObject particle;
-    GameObject b;
+   // public GameObject b;
     bool isTri = false;
+    GameObject hand;
+    float timer = 0f;
 
-    public float maxX;
-    public float minX;
-    public float maxZ;
-    public float minZ;
+    public bool water;
+    public GameObject waterOpen;
     // Update is called once per frame
-
     private void Start()
     {
-        b = GameObject.Find("FirePlace")     ;
+        hand = GameObject.Find("WhiteHand");
+        particle.GetComponent<ParticleSystem>().Pause();
+    }
+    private void Update()
+    {
+        
+        if (isTri)
+        {
+            timer += Time.deltaTime;
+
+            if (timer > 2f)
+            {
+                timer = 0;
+                isTri = false;
+            }
+        }
+    }
+
+    void ButtonSwitch() {
+        if (!isOpen )
+        {
+            particle.GetComponent<ParticleSystem>().Play();
+            particle.GetComponent<AudioSource>().Play();
+           // Debug.Log("yes");
+            if (water) {
+                waterOpen.GetComponent<ZibraLiquidEmitter>().enabled = true;
+            }
+            isOpen = true;
+        }
+        else {
+            particle.GetComponent<ParticleSystem>().Stop();
+            particle.GetComponent<AudioSource>().Pause();
+           // Debug.Log("yes:no");
+            if (water)
+            {
+                waterOpen.GetComponent<ZibraLiquidEmitter>().enabled = false;
+            }
+            isOpen = false;
+        }
+    
     }
 
 
     private void OnTriggerStay(Collider other)
     {
-       // Debug.Log("isOpen: " + isOpen);
+       
 
-        if (GameObject.Find("WhiteHand").GetComponent<HandController>().isLeftGrab && !isTri)
-        {
-            if (!isOpen)
-            {
-                //  particle.AddComponent<ParticleSystem>();
-                GameObject newPari = Instantiate(particle);
-                newPari.transform.parent = b.transform;
-                newPari.transform.position = b.transform.position;
-                newPari.GetComponent<ParticleSystem>().Play();
-                newPari.GetComponent<AudioSource>().Play();
-
-                isOpen = true;
-            }
-            else
-            {
-                if (b.transform.childCount != 0)
-                {
-                    Destroy(b.transform.GetChild(0).gameObject);
-                    isOpen = false;
-                }
-
-            }
+        if (!isTri && other.tag == "Player" && HandController.Instance.isLeftGrab && Grab.Instance.isGrabT == false) {
+           
+            ButtonSwitch();
             isTri = true;
-            Debug.Log("isOpen");
         }
-
-
-        if (other.gameObject.CompareTag("Player")) {
-            Debug.Log("HandEnter");
-        }
-
     }
 
 
-    private void OnTriggerExit(Collider other)
-    {
-        isTri = false;
-    }
-
-
-
-
-    void positionDetector() {
-        float x = transform.position.x;
-        float z = transform.position.z;
-        if (transform.position.x>maxX || transform.position.x<minX) {
-
-            x = Mathf.Clamp(x, minX, maxX);
-        }
-
-        if (transform.position.z > maxZ || transform.position.z < minZ)
-        {
-
-            z = Mathf.Clamp(x, minZ, maxZ);
-        }  
-        
-
-        Vector3 newPos = new Vector3(x,transform.position.y,z);
-
-        transform.position = newPos;
     
-    }
+
+
 }

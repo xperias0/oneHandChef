@@ -17,10 +17,10 @@ public class ItemMaterial : MonoBehaviour
     void Start()
     {
         // Init particle system
-        GameObject obj = Instantiate(particleObject, transform.position, Quaternion.identity);
-        obj.transform.SetParent(transform);
-        obj.transform.localScale = new Vector3(1f, 1f, 1f);
-        particleSystem = obj.GetComponent<ParticleSystem>();
+     //   GameObject obj = Instantiate(particleObject, transform.position, Quaternion.identity);
+        //obj.transform.SetParent(transform);
+        //obj.transform.localScale = new Vector3(1f, 1f, 1f);
+       // particleSystem = obj.GetComponent<ParticleSystem>();
         
         // Init Material
         material = GetComponent<Renderer>().material;
